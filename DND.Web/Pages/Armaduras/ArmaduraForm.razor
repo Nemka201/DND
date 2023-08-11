@@ -1,0 +1,129 @@
+﻿@inject SweetAlertService sweetAlertService
+<navigationlock onbeforeinternalnavigation="onbeforeinternalnavigation"></navigationlock>
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="container-fluid form-control form-create text-start">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div>
+                    <label for="@(() => Armadura.Nombre)">Nombre</label>
+                    <InputText class="form-control" @bind-Value="@Armadura.Nombre" />
+                    <ValidationMessage For="@(() => Armadura.Nombre)" />
+                </div>
+                <label for="@(() => Armadura.Categoria)">Categoría</label>
+                <select class="form-control" @bind="@Armadura.Categoria">
+                    @foreach (var categoria in Armadura.Categorias)
+                    {
+                        <option value="@categoria">@categoria</option>
+                    }
+                </select>
+                <label for=@(() => Armadura.ClaseDeArmadura)>Clase de Armadura</label>
+                <select class="form-control" @bind="@Armadura.ClaseDeArmadura">
+                    @foreach (var b in Bonificadores)
+                    {
+                        <option value="@b">@b</option>
+                    }
+                </select>
+                <label for=@(() => Armadura.BonDes)>Bonificador Destreza</label>
+                <select class="form-control" @bind="@Armadura.BonDes">
+                    @foreach (var b in Bonificadores)
+                    {
+                        <option value="@b">@b</option>
+                    }
+                </select>
+                <label for=@(() => Armadura.FalloArcano)>Fallo Arcano</label>
+                <select class="form-control" @bind="@Armadura.FalloArcano">
+                    @foreach (var a in ArcaneFailure)
+                    {
+                        <option value="@a">@a%</option>
+                    }
+                </select>
+                <div>
+                    <label for="@(() => Armadura.Peso)">Peso</label>
+                    <InputNumber class="form-control" @bind-Value="@Armadura.Peso" />
+                    <ValidationMessage For="@(() =>Armadura.Peso)" />
+                </div>
+                <div>
+                    <label for="@(() => Armadura.Precio)">Precio</label>
+                    <InputNumber class="form-control" @bind-Value="@Armadura.Precio" />
+                    <ValidationMessage For="@(() =>Armadura.Precio)" />
+                </div>
+            </div>
+            <br />
+            <div class="col-1"></div>
+            <div class="row m-3">
+                <div class="col-6">
+                    <button class="btn btn-princenton-orange" type="submit">Guardar Cambios</button>
+                    <button class="btn btn-princenton-orange" @onclick="ReturnAction">Regresar</button>
+                </div>
+                <div class="col-6"></div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Armadura);
+    }
+
+    [EditorRequired]
+    [Parameter]
+    public Armadura Armadura { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; } = false;
+    public List<int> Bonificadores = new List<int>
+        {
+            0,1,2,3,4,5,6,7,8,9
+        };
+    public List<int> ArcaneFailure = new List<int>
+        {
+            0,5,10,15,20,25,30,35,40,45,50
+        };
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasEdited = editContext.IsModified();
+
+        if (!formWasEdited)
+        {
+            return;
+        }
+
+        if (FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+
+}
+

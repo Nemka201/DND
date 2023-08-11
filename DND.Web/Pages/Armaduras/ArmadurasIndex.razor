@@ -1,0 +1,243 @@
+﻿@page "/Armaduras"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 text-end">
+            <a href="/armaduras/create">
+                <span class="oi oi-plus" style="color:#EAEAEA"></span>
+            </a>
+            <h1>
+                Armaduras
+            </h1>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-3 text-center">
+            <InputText class="form-control mt-2" @oninput="SearchOnChange" @bind-Value=searchText />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <GenericList MyList="Armaduras">
+                <Body>
+                    <table class="table table-striped table-hover" style="color: #EAEAEA">
+                        <thead>
+                            <tr>
+                                <th @onclick="( () => SortByName())" style="cursor:pointer">
+                                    <p>Nombre</p>
+                                </th>
+                                <th @onclick="( () => SortByCategory())" style="cursor:pointer">
+                                    <p>Categoría</p>
+                                </th>
+                                <th class="text-center" @onclick="( () => SortByCategory())" style="cursor:pointer">
+                                    <p>Clase de Armadura</p>
+                                </th>
+                                <th class="text-center" @onclick="( () => SortByCategory())" style="cursor:pointer">
+                                    <p>Bon Destreza</p>
+                                </th>
+                                <th class="text-center" @onclick="( () => SortByFalloArcano())" style="cursor:pointer">
+                                    <p>Fallo Arcano %</p>
+                                </th>
+                                <th class="text-center" style="cursor:pointer">
+                                    <p>Peso</p>
+                                </th>
+                                <th class="text-center" @onclick="( () => SortByPrice())" style="cursor:pointer">
+                                    <p>Precio PO</p>
+                                </th>
+                                <th>
+
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: #EAEAEA">
+                            @foreach (var armadura in Armaduras!)
+                            {
+                                <tr style="color: #EAEAEA; cursor:pointer;" @onclick="() => ShowDetail(armadura)">
+                                    <td>
+                                        <p>@armadura.Nombre</p>
+                                    </td>
+                                    <td>
+                                        <p>@armadura.Categoria</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>+@armadura.ClaseDeArmadura</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>+@armadura.BonDes</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>@armadura.FalloArcano%</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>@armadura.Peso lb</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>@Convert.ToInt32(armadura.Precio) PO</p>
+                                    </td>
+                                    <td>
+                                        <a href="/armaduras/edit/@armadura.Id">
+                                            <i class="oi oi-pencil" style="color:#EAEAEA"></i>
+                                        </a>
+                                        <a href="/armaduras/create">
+                                            <i class="oi oi-trash" style="color:#EAEAEA"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </Body>
+
+            </GenericList>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public List<Armadura>? Armaduras { get; set; }
+    public List<Armadura>? armadurasOrigen { get; set; }
+    bool asc = true;
+    public string? searchText;
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<List<Armadura>>("api/armaduras");
+        Armaduras = responseHttp.Response!;
+        armadurasOrigen = Armaduras;
+    }
+    private void SearchOnChange(ChangeEventArgs e)
+    {
+        searchText = e.Value!.ToString();
+        UpdateArmadurasList();
+    }
+
+    private void UpdateArmadurasList() => Armaduras = armadurasOrigen!.Where(armadura => armadura.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+
+
+    private async Task ShowDetail(Armadura armadura)
+    {
+        var alertConfig = new SweetAlertOptions
+            {
+                Title = armadura.Nombre,
+                Text = $"Categoría:{armadura.Categoria}</br> CA: +{armadura.ClaseDeArmadura} Bono Destreza: +{armadura.BonDes} Fallo Arcano: {armadura.FalloArcano}% Precio: {armadura.Precio}",
+            };
+
+        await sweetAlertService.FireAsync(alertConfig);
+    }
+    private async Task Delete(int armaduraId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Esta seguro que quieres borrar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.Delete($"api/armaduras/{armaduraId}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/");
+                return;
+            }
+
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+    }
+    private void SortByName()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.Nombre).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.Nombre).ToList();
+            asc = true;
+        }
+    }
+    private void SortByCategory()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.Categoria).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.Categoria).ToList();
+            asc = true;
+        }
+    }
+    private void SortByPrice()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.Precio).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.Precio).ToList();
+            asc = true;
+        }
+    }
+    private void SortByCA()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.ClaseDeArmadura).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.ClaseDeArmadura).ToList();
+            asc = true;
+        }
+    }
+    private void SortByBonoDes()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.BonDes).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.BonDes).ToList();
+            asc = true;
+        }
+    }
+    private void SortByFalloArcano()
+    {
+        if (asc)
+        {
+            Armaduras = Armaduras!.OrderByDescending(armadura => armadura.FalloArcano).ToList();
+            asc = false;
+        }
+        else
+        {
+            Armaduras = Armaduras!.OrderBy(armadura => armadura.FalloArcano).ToList();
+            asc = true;
+        }
+    }
+}
+
+

@@ -1,0 +1,72 @@
+﻿@page "/armaduras/edit/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h3>Editar Armadura</h3>
+        </div>
+    </div>
+</div>
+
+@if (armadura is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <ArmaduraForm @ref="armaduraForm" Armadura="armadura" OnValidSubmit="Edit" ReturnAction="Return" />
+}
+
+@code {
+    private Armadura? armadura;
+    private ArmaduraForm? armaduraForm;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHTTP = await repository.Get<Armadura>($"api/armaduras/{Id}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("armaduras");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            armadura = responseHTTP.Response;
+        }
+    }
+
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put($"api/armaduras/{armadura.Id}", armadura);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            armaduraForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("armaduras");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("armaduras");
+    }
+}
+

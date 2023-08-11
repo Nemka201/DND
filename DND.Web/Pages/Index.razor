@@ -1,0 +1,505 @@
+﻿@page "/"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<PageTitle>D&D 3.5</PageTitle>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <div class="row mt-2">
+                <div class="col-4"></div>
+                <div class="col-4 text-center">
+                    <InputText class="form-control" @oninput="SearchOnChange" @bind-Value=searchText />
+                </div>
+                <div class="col-4 mb-2"></div>
+            </div>
+
+            @*      Entities Lists       *@
+
+            <div class="row mt-2">
+                @if (!string.IsNullOrEmpty(searchText))
+                {
+                    @if (FilteredArmaduras is not null) @*  Armors List  *@
+                    {
+                        <GenericList MyList="FilteredArmaduras">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                                <p>Categoría</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Clase de Armadura</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Bon Destreza</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Fallo Arcano %</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Precio PO</p>
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var armadura in FilteredArmaduras!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@armadura.Nombre</p>
+                                                </td>
+                                                <td>
+                                                    <p>@armadura.Categoria</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>+@armadura.ClaseDeArmadura</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>+@armadura.BonDes</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@armadura.FalloArcano%</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@Convert.ToInt32(armadura.Precio) PO</p>
+                                                </td>
+                                                <td>
+                                                    <p>Armadura</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }else
+                    {
+                        
+                    }
+                    @if (FilteredArmas is not null) @*  Weapons List    *@
+                    {
+                        <GenericList MyList="FilteredArmas">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                                <p>Categoria</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Daño</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Tipo de Daño</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Critico</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Precio PO</p>
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var arma in FilteredArmas!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@arma.Nombre</p>
+                                                </td>
+                                                <td>
+                                                    <p>@arma.Categoria</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@arma.Daño</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@arma.TipoDaño</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@arma.Critico</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@Convert.ToInt32(arma.Precio) PO</p>
+                                                </td>
+                                                <td>
+                                                    <p>Arma</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                    @if (FilteredClases is not null) @*  Clases List    *@
+                    {
+                        <GenericList MyList="FilteredClases">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var clase in FilteredClases!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@clase.Nombre</p>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td>
+                                                    <p>Clase</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                    @if (FilteredDotes is not null) @*  Dotes List    *@
+                    {
+                        <GenericList MyList="FilteredDotes">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var dote in FilteredDotes!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@dote.Nombre</p>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td>
+                                                    <p>Dote</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                    @if (FilteredOM is not null) @*  Magic Objects List  *@
+                    {
+                        <GenericList MyList="FilteredOM">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var om in FilteredOM!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@om.Nombre</p>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td>
+                                                    <p>Objeto Mágico</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                    @if (FilteredRazas is not null) @*  Races List  *@
+                    {
+                        <GenericList MyList="FilteredRazas">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var raza in FilteredRazas!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@raza.Nombre</p>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td>
+                                                    <p>Raza</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                    @if (FilteredConjuros is not null) @*  Races List  *@
+                    {
+                        <GenericList MyList="FilteredConjuros">
+                            <Body>
+                                <table class="table table-striped table-hover" style="color: #EAEAEA">
+                                    <thead>
+                                        <tr>
+                                            <th style="cursor:pointer">
+                                                <p>Nombre</p>
+                                            </th>
+                                            <th class="text-center" style="cursor:pointer">
+                                                <p>Nivel de conjuro</p>
+                                            </th>
+                                            <th style="cursor:pointer">
+                                                <p>Escuela</p>
+                                            </th>
+                                            <th  style="cursor:pointer">
+                                            </th>
+                                            <th  style="cursor:pointer">
+                                            </th>
+                                            <th  style="cursor:pointer">
+                                            </th>
+                                            <th>
+                                                <p>Tipo</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="color: #EAEAEA">
+                                        @foreach (var conjuro in FilteredConjuros!)
+                                        {
+                                            <tr style="color: #EAEAEA; cursor:pointer;">
+                                                <td>
+                                                    <p>@conjuro.Nombre</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    <p>@conjuro.Nivel</p>
+                                                </td>
+                                                <td >
+                                                    <p>@conjuro.Escuela</p>
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td class="text-center">
+                                                </td>
+                                                <td>
+                                                    <p>Conjuro</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </Body>
+                            <Loading></Loading>
+                            <NoRecords></NoRecords>
+
+                        </GenericList>
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+                    
+                }
+            </div>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+
+@code{
+
+    private IndexDTO? IndexData  { get; set; }
+    private List<Armadura>? FilteredArmaduras { get; set; }
+    private List<Arma>? FilteredArmas { get; set; }
+    private List<Dote>? FilteredDotes { get; set; }
+    private List<Clase>? FilteredClases { get; set; }
+    private List<Conjuro>? FilteredConjuros { get; set; }
+    private List<ObjetoMagico>? FilteredOM { get; set; }
+    private List<Raza>? FilteredRazas { get; set; }
+    private string? searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<IndexDTO>("api/index");
+        IndexData = responseHttp.Response!;
+    }
+    private void SearchOnChange(ChangeEventArgs e)
+    {
+        searchText = e.Value!.ToString();
+        UpdateIndexList();
+    }
+
+    private void UpdateIndexList()
+    {
+        FilteredArmaduras = (IndexData!.Armaduras!.Where(armadura => armadura.Nombre.ToLower().Contains(searchText!.ToLower())).ToList());
+        FilteredArmas = IndexData.Armas!.Where(arma => arma.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+        FilteredClases = IndexData.Clases!.Where(clase => clase.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+        FilteredConjuros = IndexData.Conjuros!.Where(conjuro => conjuro.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+        FilteredDotes = IndexData.Dotes!.Where(dote => dote.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+        FilteredOM = IndexData.ObjetosMagicos!.Where(om => om.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+        FilteredRazas = IndexData.Razas!.Where(raza => raza.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+    }
+}
+

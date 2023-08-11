@@ -1,0 +1,42 @@
+﻿@page "/armas/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nueva arma</h1>
+            <ArmaForm  @ref="armaForm" Arma="arma" OnValidSubmit="Create" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Arma arma = new();
+    private ArmaForm? armaForm;
+
+    private async Task Create()
+    {
+        var responseHttp = await repository.Post("/api/Armas", arma);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            armaForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("/armas");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/armas");
+    }
+}
+

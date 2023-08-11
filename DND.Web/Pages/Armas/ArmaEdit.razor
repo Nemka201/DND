@@ -1,0 +1,72 @@
+﻿@page "/armas/edit/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h3>Editar Arma</h3>
+        </div>
+    </div>
+</div>
+
+@if (arma is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <ArmaForm @ref="armaForm" Arma="arma" OnValidSubmit="Edit" ReturnAction="Return" />
+}
+
+@code {
+    private Arma? arma;
+    private ArmaForm? armaForm;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHTTP = await repository.Get<Arma>($"api/Armas/{Id}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("armas");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            arma = responseHTTP.Response;
+        }
+    }
+
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put($"api/Armas/{arma.Id}", arma);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            armaForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("armas");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("armas");
+    }
+}
+

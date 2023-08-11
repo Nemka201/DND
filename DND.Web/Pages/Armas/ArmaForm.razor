@@ -1,0 +1,120 @@
+﻿@inject SweetAlertService sweetAlertService
+<navigationlock onbeforeinternalnavigation="onbeforeinternalnavigation"></navigationlock>
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="container-fluid form-control form-create text-start">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div>
+                    <label for="@(() => Arma.Nombre)">Nombre</label>
+                    <InputText class="form-control" @bind-Value="@Arma.Nombre" />
+                    <ValidationMessage For="@(() => Arma.Nombre)" />
+                </div>
+                <label for="@(() => Arma.Categoria)">Categoría</label>
+                <select class="form-control" @bind="@Arma.Categoria">
+                    @foreach (var categoria in Arma.Categorias)
+                    {
+                        <option value="@categoria">@categoria</option>
+                    }
+                </select>
+                <div>
+                    <label for=@(() => Arma.Daño)>Daño</label>
+                    <InputText class="form-control" @bind-Value="@Arma.Daño" />
+                    <ValidationMessage For="@(() => Arma.Daño)"></ValidationMessage>
+                </div>
+                <label for=@(() => Arma.TipoDaño)>Tipo de daño</label>
+                <select class="form-control" @bind="@Arma.TipoDaño">
+                    @foreach (var tipoDaño in Arma.TiposDaño)
+                    {
+                            <option value="@tipoDaño">@tipoDaño</option>
+                    }
+                </select>
+                <label for=@(() => Arma.Critico)>Crítico</label>
+                <select class="form-control" @bind="@Arma.Critico">
+                    <option value="18-X2"><p>18-X2</p></option>
+                    <option value="19-X2"><p>19-X2</p></option>
+                    <option value="20-X2"><p>20-X2</p></option>
+                    <option value="20-X3"><p>20-X3</p></option>
+                    <option value="20-X4"><p>20-X4</p></option>
+                </select>
+                <div>
+                    <label for="@(() => Arma.Peso)">Peso</label>
+                    <InputNumber class="form-control" @bind-Value="@Arma.Peso" />
+                    <ValidationMessage For="@(() =>Arma.Peso)" />
+                </div>
+                <div>
+                    <label for="@(() => Arma.Precio)">Precio</label>
+                    <InputNumber class="form-control" @bind-Value="@Arma.Precio" />
+                    <ValidationMessage For="@(() =>Arma.Precio)" />
+                </div>
+            </div>
+            <br />
+            <div class="col-1"></div>
+            <div class="row m-3">
+                <div class="col-6">
+                    <button class="btn btn-princenton-orange" type="submit">Guardar Cambios</button>
+                    <button class="btn btn-princenton-orange" @onclick="ReturnAction">Regresar</button>
+                </div>
+                <div class="col-6"></div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Arma);
+    }
+
+    [EditorRequired]
+    [Parameter]
+    public Arma Arma { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; } = false;
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasEdited = editContext.IsModified();
+
+        if (!formWasEdited)
+        {
+            return;
+        }
+
+        if (FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+
+}
+

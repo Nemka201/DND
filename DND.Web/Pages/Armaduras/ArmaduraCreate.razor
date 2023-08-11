@@ -1,0 +1,42 @@
+﻿@page "/armaduras/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nueva armadura</h1>
+            <ArmaduraForm  @ref="armaduraForm" Armadura="armadura" OnValidSubmit="Create" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Armadura armadura = new();
+    private ArmaduraForm? armaduraForm;
+
+    private async Task Create()
+    {
+        var responseHttp = await repository.Post("/api/armaduras", armadura);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            armaduraForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("/armaduras");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/armaduras");
+    }
+}
+

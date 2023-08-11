@@ -1,0 +1,65 @@
+﻿<div class="nav-menu nav-menu-dark nav-menu-scrollable" @onclick="ToggleNavMenu">
+    <a class="navbar-brand text-center" style="color: #EAEAEA;font-size:1em;" href=""><p>Dungeons<br /> & <br />Dragons 3.5</p></a>
+    <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <nav class="flex-column items">
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" ActiveClass="active">
+                <span class="oi oi-home mb-1 mr-1" aria-hidden="true"></span><p>Home</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="razas">
+                <img src="assets/razas.png" id="icon" style="width:20px;height:20px;object-fit:contain;filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Razas</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="clases">
+                <img src="assets/clases.png" id="icon" style="width:20px;height:20px;object-fit:contain;filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Clases</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="dotes">
+                <span class="oi oi-plus" aria-hidden="true"></span><p>Dotes</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="conjuros">
+                <img src="assets/book.png" id="icon" style="width:20px;height:20px;object-fit:contain;filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Conjuros</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="objetos-magicos">
+                <img src="assets/om.png" id="icon" style="width:20px;height:20px;object-fit:contain;filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Objetos Mágicos</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="armas">
+                <img src="assets/swords.png" id="icon" style="width:20px;height:20px;object-fit:contain;filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Armas</p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 justify-content-start">
+            <NavLink class="nav-link" href="armaduras">
+                <img src="assets/armor.png" class="icon" style="width:20px;height:20px;object-fit:contain; filter: invert(100%); margin:0 5px 15px 0;" />
+                <p>Armaduras</p>
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
