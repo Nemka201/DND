@@ -1,0 +1,43 @@
+﻿@page "/Conjuros/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nuevo Conjuro</h1>
+            <ConjuroForm @ref="conjuroForm" Conjuro="conjuro" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Conjuro conjuro = new();
+
+    private ConjuroForm? conjuroForm;
+
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/Conjuros", conjuro);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            conjuroForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("conjuros");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("conjuros");
+    }
+}
+

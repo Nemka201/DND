@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dnd.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Objetos-Magicos")]
     [ApiController]
     public class ConjurosController : ControllerBase
     {
@@ -46,7 +46,6 @@ namespace Dnd.API.Controllers
         }
 
         // PUT: api/Conjuros/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutConjuro(int id, Conjuro conjuro)
         {
@@ -77,7 +76,6 @@ namespace Dnd.API.Controllers
         }
 
         // POST: api/Conjuros
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Conjuro>> PostConjuro(Conjuro conjuro)
         {

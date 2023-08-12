@@ -1,4 +1,4 @@
-﻿@page "/Armas"
+﻿@page "/Conjuros"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -7,10 +7,10 @@
     <div class="row">
         <div class="col-6 text-end">
             <h1>
-                <a href="/Armas/create">
+                <a href="/conjuros/create">
                     <span class="oi oi-plus" style="color:#EAEAEA;font-size:0.5em"></span>
                 </a>
-                Armas
+                Dotes
             </h1>
         </div>
         <div class="col-2"></div>
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-1"></div>
         <div class="col-10">
-            <GenericList MyList="Armas">
+            <GenericList MyList="Conjuros">
                 <Body>
                     <table class="table table-striped table-hover" style="color: #EAEAEA">
                         <thead>
@@ -30,50 +30,43 @@
                                     <p>Nombre</p>
                                 </th>
                                 <th style="cursor:pointer">
-                                    <p>Categoria</p>
+                                    <p>Nivel</p>
                                 </th>
                                 <th class="text-center" style="cursor:pointer">
-                                    <p>Daño</p>
+                                    <p>Escuela</p>
                                 </th>
                                 <th class="text-center" style="cursor:pointer">
-                                    <p>Tipo de Daño</p>
+                                    <p>Descripcion</p>
                                 </th>
                                 <th class="text-center" style="cursor:pointer">
-                                    <p>Critico</p>
                                 </th>
                                 <th class="text-center" style="cursor:pointer">
-                                    <p>Precio PO</p>
                                 </th>
-                                <th><p></p></th>
                             </tr>
                         </thead>
-                        <tbody style="color: #EAEAEA;border-radius:15px;">
-                            @foreach (var arma in Armas!)
+                        <tbody style="color: #EAEAEA">
+                            @foreach (var conjuro in Conjuros!)
                             {
-                                <tr style="color: #EAEAEA; cursor:pointer; background-color:saddlebrown;">
+                                <tr style="color: #EAEAEA; cursor:pointer;">
                                     <td>
-                                        <p>@arma.Nombre</p>
-                                    </td>
-                                    <td>
-                                        <p>@arma.Categoria</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p>@arma.Daño</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p>@arma.TipoDaño</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p>@arma.Critico</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p>@Convert.ToInt32(arma.Precio) PO</p>
+                                        <p>@conjuro.Nombre</p>
                                     </td>
                                     <td>
-                                        <a href="/Armas/edit/@arma.Id">
+                                        <p>@conjuro.Nivel</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>@conjuro.Escuela</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p>@conjuro.Descripcion</p>
+                                    </td>
+                                    <td class="text-center">
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/Conjuros/edit/@conjuro.Id">
                                             <i class="oi oi-pencil" style="color:#EAEAEA"></i>
                                         </a>
-                                        <a href="/Armas" @onclick="@(() => DeleteAsync(arma.Id))">
+                                        <a href="/Conjuros" @onclick="@(() => DeleteAsync(conjuro.Id))">
                                             <i class="oi oi-trash" style="color:#EAEAEA"></i>
                                         </a>
                                     </td>
@@ -90,15 +83,15 @@
 
 
 @code {
-    public List<Arma>? Armas { get; set; }
-    public List<Arma>? armasOrigen { get; set; }
-    bool asc = true;
+    public List<Conjuro>? Conjuros { get; set; }
+    public List<Conjuro>? conjurosOrigen { get; set; }
+    bool sortAsc = true;
     public string? searchText;
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<List<Arma>>("api/Armas");
-        Armas = responseHttp.Response!;
-        armasOrigen = Armas;
+        var responseHttp = await repository.Get<List<Conjuro>>("api/Conjuros");
+        Conjuros = responseHttp.Response!;
+        conjurosOrigen = Conjuros;
     }
 
     private async Task DeleteAsync(int id)
@@ -119,7 +112,7 @@
             return;
         }
 
-        var responseHttp = await repository.Delete($"/api/armas/{id}");
+        var responseHttp = await repository.Delete($"/api/Conjuros/{id}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
@@ -131,100 +124,36 @@
         }
         await OnInitializedAsync();
     }
-    private async Task ShowDetail(Arma arma)
+    private async Task ShowDetail(Conjuro conjuro)
     {
         var alertConfig = new SweetAlertOptions
             {
-                Title = arma.Nombre,
-                Text = $"Categoría:{arma.Categoria}</br> Daño: +{arma.Daño} Tipo de daño: +{arma.TipoDaño} Critico: {arma.Critico}% Precio: {arma.Precio}",
+                Title = conjuro.Nombre,
+                Text = $"Categoría:{conjuro.Escuela}</br> Prerequisitos: +{conjuro.Nivel} Descripcion: +{conjuro.Descripcion}",
             };
 
         await sweetAlertService.FireAsync(alertConfig);
     }
     private void SortByName()
     {
-        if (asc)
+        if (sortAsc)
         {
-            Armas = Armas!.OrderByDescending(arma => arma.Nombre).ToList();
-            asc = false;
+            Conjuros = Conjuros!.OrderByDescending(conjuro => conjuro.Nombre).ToList();
+            sortAsc = false;
         }
         else
         {
-            Armas = Armas!.OrderBy(arma => arma.Nombre).ToList();
-            asc = true;
+            Conjuros = Conjuros!.OrderBy(conjuro => conjuro.Nombre).ToList();
+            sortAsc = true;
         }
     }
-    private void SortByCategory()
-    {
-        if (asc)
-        {
-            Armas = Armas!.OrderByDescending(arma => arma.Categoria).ToList();
-            asc = false;
-        }
-        else
-        {
-            Armas = Armas!.OrderBy(arma => arma.Categoria).ToList();
-            asc = true;
-        }
-    }
-    private void SortByPrice()
-    {
-        if (asc)
-        {
-            Armas = Armas!.OrderByDescending(arma => arma.Precio).ToList();
-            asc = false;
-        }
-        else
-        {
-            Armas = Armas!.OrderBy(arma => arma.Precio).ToList();
-            asc = true;
-        }
-    }
-    private void SortByDamage()
-    {
-        if (asc)
-        {
-            Armas = Armas!.OrderByDescending(arma => arma.Daño).ToList();
-            asc = false;
-        }
-        else
-        {
-            Armas = Armas!.OrderBy(arma => arma.Daño).ToList();
-            asc = true;
-        }
-    }
-    private void SortByDamageType()
-    {
-        if (asc)
-        {
-            Armas = Armas!.OrderByDescending(arma => arma.TipoDaño).ToList();
-            asc = false;
-        }
-        else
-        {
-            Armas = Armas!.OrderBy(arma => arma.TipoDaño).ToList();
-            asc = true;
-        }
-    }
-    private void SortByCritic()
-    {
-        if (asc)
-        {
-            Armas = Armas!.OrderByDescending(arma => arma.Critico).ToList();
-            asc = false;
-        }
-        else
-        {
-            Armas = Armas!.OrderBy(arma => arma.Critico).ToList();
-            asc = true;
-        }
-    }
+    
     private void SearchOnChange(ChangeEventArgs e)
     {
         searchText = e.Value!.ToString();
-        UpdateArmasList();
+        UpdateConjurosList();
     }
-    private void UpdateArmasList() => Armas = armasOrigen!.Where(arma => arma.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
+    private void UpdateConjurosList() => Conjuros = conjurosOrigen!.Where(conjuro => conjuro.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
 }
 
 

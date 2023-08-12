@@ -20,7 +20,7 @@ namespace DND.Shared.Models.Entities
         [Display(Name = "Rasgos de la Raza")]
         [MaxLength(2000, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
         public string Rasgos { get; set; }
-        public string PathImage { get; set; }
+        public string? PathImage { get; set; }
 
         [NotMapped]
         public IFormFile? Image { get; set; }

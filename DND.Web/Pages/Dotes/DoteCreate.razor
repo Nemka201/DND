@@ -1,0 +1,43 @@
+﻿@page "/Dotes/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nueva Dote</h1>
+            <DoteForm  @ref="doteForm" Dote="dote" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Dote dote = new();
+
+    private DoteForm? doteForm;
+
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/Dotes", dote);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            doteForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("Dotes");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("Dotes");
+    }
+}
+

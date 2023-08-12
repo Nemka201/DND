@@ -1,0 +1,42 @@
+﻿@page "/Objetos-Magicos/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nuevo Objeto Mágico</h1>
+            <ObjetoMagicoForm  @ref="omForm" ObjetoMagico="om" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private ObjetoMagico om { get; set; }
+    private ObjetoMagicoForm? omForm;
+
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/ObjetosMagicos", om);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            omForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("/Objetos-Magicos");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/Objetos-Magicos");
+    }
+}
+

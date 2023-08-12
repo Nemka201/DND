@@ -11,27 +11,27 @@ namespace DND.Shared.Models.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Nombre")]
         [MaxLength(50, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? Nombre { get; set; }
+        public string Nombre { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Critico")]
         [MaxLength(20, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? Critico { get; set; }
+        public string Critico { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Categoría")]
         [MaxLength(20, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? Categoria { get; set; }
+        public string Categoria { get; set; }
 
         [Display(Name = "Tipo de Daño")]
         [MaxLength(20, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? TipoDaño { get; set; }
+        public string TipoDaño { get; set; }
 
         [Display(Name = "Daño")]
         [MaxLength(20, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? Daño { get; set; }
+        public string Daño { get; set; }
         [Display(Name = "Alcance")]
         [MaxLength(20, ErrorMessage = "El campo {0} no puede tener más de {1} caractéres")]
-        public string? Alcance { get; set; }
+        public string Alcance { get; set; }
 
         [Display(Name = "Peso")]
         public int Peso { get; set; }
@@ -55,16 +55,28 @@ namespace DND.Shared.Models.Entities
             };
         [NotMapped]
         [Display(Name = "Categorías")]
-        public List<string> Categorias = new List<string>
+        static public List<string> Categorias = new List<string>
             {
                 "Exóticas",
                 "Marciales",
                 "Sencillas"
             };
-        public List<string> Alcances = new List<string>
+        [NotMapped]
+        [Display(Name = "Categorías")]
+        static public List<string> Alcances = new List<string>
             {
                 "Cuerpo a cuerpo",
                 "Distancia",
+            };
+        [NotMapped]
+        [Display(Name = "Categorías")]
+        static public List<string> Criticos = new List<string>
+            {
+                "| 18-20 | X2 |",
+                "| 19-20 | X2 |",
+                "| 20 | X2 |",
+                "| 20 | X3 |",
+                "| 20 | X4 |"
             };
     }
 }

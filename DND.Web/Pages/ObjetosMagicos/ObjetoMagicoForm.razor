@@ -8,47 +8,20 @@
             <div class="col-1"></div>
             <div class="col-10">
                 <div>
-                    <label for="@(() => Armadura.Nombre)">Nombre</label>
-                    <InputText class="form-control" @bind-Value="@Armadura.Nombre" />
-                    <ValidationMessage For="@(() => Armadura.Nombre)" />
-                </div>
-                <label for="@(() => Armadura.Categoria)">Categoría</label>
-                <select class="form-control" @bind="@Armadura.Categoria">
-                    @foreach (var categoria in Armadura.Categorias)
-                    {
-                        <option value="@categoria">@categoria</option>
-                    }
-                </select>
-                <label for=@(() => Armadura.ClaseDeArmadura)>Clase de Armadura</label>
-                <select class="form-control" @bind="@Armadura.ClaseDeArmadura">
-                    @foreach (var b in Armadura.Bonificadores)
-                    {
-                        <option value="@b">@b</option>
-                    }
-                </select>
-                <label for=@(() => Armadura.BonDes)>Bonificador Destreza</label>
-                <select class="form-control" @bind="@Armadura.BonDes">
-                    @foreach (var b in Armadura.Bonificadores)
-                    {
-                        <option value="@b">@b</option>
-                    }
-                </select>
-                <label for=@(() => Armadura.FalloArcano)>Fallo Arcano</label>
-                <select class="form-control" @bind="@Armadura.FalloArcano">
-                    @foreach (var a in Armadura.ArcaneFailure)
-                    {
-                        <option value="@a">@a%</option>
-                    }
-                </select>
-                <div>
-                    <label for="@(() => Armadura.Peso)">Peso</label>
-                    <InputNumber class="form-control" @bind-Value="@Armadura.Peso" />
-                    <ValidationMessage For="@(() =>Armadura.Peso)" />
+                    <label for="@(() => OM.Nombre)">Nombre</label>
+                    <InputText class="form-control" @bind-Value="@OM.Nombre" />
+                    <ValidationMessage For="@(() => OM.Nombre)" />
                 </div>
                 <div>
-                    <label for="@(() => Armadura.Precio)">Precio</label>
-                    <InputNumber class="form-control" @bind-Value="@Armadura.Precio" />
-                    <ValidationMessage For="@(() =>Armadura.Precio)" />
+                    <label for="@(() => OM.Descripcion)">Descripcion</label>
+                    <InputText class="form-control" @bind-Value="@OM.Nombre" />
+                    <ValidationMessage For="@(() => OM.Nombre)" />
+                </div>
+
+                <div>
+                    <label for="@(() => OM.Precio)">Precio</label>
+                    <InputNumber class="form-control" @bind-Value="@OM.Precio" />
+                    <ValidationMessage For="@(() =>OM.Precio)" />
                 </div>
             </div>
             <br />
@@ -66,15 +39,14 @@
 
 @code {
     private EditContext editContext = null!;
-
     protected override void OnInitialized()
     {
-        editContext = new(Armadura);
+        editContext = new(OM);
     }
 
     [EditorRequired]
     [Parameter]
-    public Armadura Armadura { get; set; } = null!;
+    public ObjetoMagico OM { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]
@@ -85,7 +57,6 @@
     public EventCallback ReturnAction { get; set; }
 
     public bool FormPostedSuccessfully { get; set; } = false;
-
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext context)
     {

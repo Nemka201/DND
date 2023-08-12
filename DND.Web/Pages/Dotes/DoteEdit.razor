@@ -1,40 +1,40 @@
-﻿@page "/Armas/edit/{Id:int}"
+﻿@page "/Dotes/edit/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <h3>Editar Arma</h3>
+            <h3>Editar Dote</h3>
         </div>
     </div>
 </div>
 
-@if (arma is null)
+@if (dote is null)
 {
     <p>Cargando...</p>
 }
 else
 {
-    <ArmaForm @ref="armaForm" Arma="arma" OnValidSubmit="Edit" ReturnAction="Return" />
+    <DoteForm @ref="doteForm" Dote="dote" OnValidSubmit="Edit" ReturnAction="Return" />
 }
 
 @code {
-    private Arma? arma;
-    private ArmaForm? armaForm;
+    private Dote? dote;
+    private DoteForm? doteForm;
 
     [Parameter]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHTTP = await repository.Get<Arma>($"api/Armas/{Id}");
+        var responseHTTP = await repository.Get<Dote>($"api/Dotes/{Id}");
 
         if (responseHTTP.Error)
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("Armas");
+                navigationManager.NavigateTo("dotes");
             }
             else
             {
@@ -44,13 +44,13 @@ else
         }
         else
         {
-            arma = responseHTTP.Response;
+            dote = responseHTTP.Response;
         }
     }
 
     private async Task Edit()
     {
-        var responseHTTP = await repository.Put($"api/Armas/{arma.Id}", arma);
+        var responseHTTP = await repository.Put($"api/Dotes/{dote.Id}", dote);
 
         if (responseHTTP.Error)
         {
@@ -59,14 +59,14 @@ else
         }
         else
         {
-            armaForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("Armas");
+            doteForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("Dotes");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("Armas");
+        navigationManager.NavigateTo("Dotes");
     }
 }
 

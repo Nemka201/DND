@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dnd.API.Controllers
 {
-    [Route("api/armaduras")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ArmadurasController : ControllerBase
     {

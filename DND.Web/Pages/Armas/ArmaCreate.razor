@@ -1,4 +1,4 @@
-﻿@page "/armas/create"
+﻿@page "/Armas/create"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -7,17 +7,23 @@
     <div class="row">
         <div class="col-12 text-center">
             <h1>Agregar nueva arma</h1>
-            <ArmaForm  @ref="armaForm" Arma="arma" OnValidSubmit="Create" ReturnAction="Return" />
+            <ArmaForm  @ref="armaForm" Arma="arma" OnValidSubmit="CreateAsync" ReturnAction="Return" />
         </div>
     </div>
 </div>
 
 
 @code {
-    private Arma arma = new();
+    private Arma arma = new Arma
+        {
+            Categoria = Arma.Categorias[0],
+            Alcance = Arma.Alcances[0],
+            Critico = Arma.Criticos[0]
+
+        };
     private ArmaForm? armaForm;
 
-    private async Task Create()
+    private async Task CreateAsync()
     {
         var responseHttp = await repository.Post("/api/Armas", arma);
         if (responseHttp.Error)
@@ -29,14 +35,14 @@
         else
         {
             armaForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("/armas");
+            navigationManager.NavigateTo("Armas");
         }
 ;
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("/armas");
+        navigationManager.NavigateTo("Armas");
     }
 }
 

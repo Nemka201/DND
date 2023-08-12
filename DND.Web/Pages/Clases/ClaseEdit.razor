@@ -1,40 +1,40 @@
-﻿@page "/Armas/edit/{Id:int}"
+﻿@page "/Clases/edit/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <h3>Editar Arma</h3>
+            <h3>Editar Clase</h3>
         </div>
     </div>
 </div>
 
-@if (arma is null)
+@if (clase is null)
 {
     <p>Cargando...</p>
 }
 else
 {
-    <ArmaForm @ref="armaForm" Arma="arma" OnValidSubmit="Edit" ReturnAction="Return" />
+    <ClaseForm @ref="claseForm" Clase="clase" OnValidSubmit="Edit" ReturnAction="Return" />
 }
 
 @code {
-    private Arma? arma;
-    private ArmaForm? armaForm;
+    private Clase? clase;
+    private ClaseForm? claseForm;
 
     [Parameter]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHTTP = await repository.Get<Arma>($"api/Armas/{Id}");
+        var responseHTTP = await repository.Get<Clase>($"api/Clases/{Id}");
 
         if (responseHTTP.Error)
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("Armas");
+                navigationManager.NavigateTo("Clases");
             }
             else
             {
@@ -44,13 +44,13 @@ else
         }
         else
         {
-            arma = responseHTTP.Response;
+            clase = responseHTTP.Response;
         }
     }
 
     private async Task Edit()
     {
-        var responseHTTP = await repository.Put($"api/Armas/{arma.Id}", arma);
+        var responseHTTP = await repository.Put($"api/Clases/{clase.Id}", clase);
 
         if (responseHTTP.Error)
         {
@@ -59,14 +59,14 @@ else
         }
         else
         {
-            armaForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("Armas");
+            claseForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("Clases");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("Armas");
+        navigationManager.NavigateTo("Clases");
     }
 }
 

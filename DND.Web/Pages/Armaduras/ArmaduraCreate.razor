@@ -1,4 +1,4 @@
-﻿@page "/armaduras/create"
+﻿@page "/Armaduras/create"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -14,12 +14,18 @@
 
 
 @code {
-    private Armadura armadura = new();
+    private Armadura armadura = new Armadura
+        {
+            Categoria = Armadura.Categorias[0],
+            ClaseDeArmadura = Armadura.Bonificadores[0],
+            BonDes = Armadura.Bonificadores[0],
+            FalloArcano = Armadura.ArcaneFailure[0]
+        };
     private ArmaduraForm? armaduraForm;
 
     private async Task Create()
     {
-        var responseHttp = await repository.Post("/api/armaduras", armadura);
+        var responseHttp = await repository.Post("/api/Armaduras", armadura);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -29,14 +35,14 @@
         else
         {
             armaduraForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("/armaduras");
+            navigationManager.NavigateTo("Armaduras");
         }
 ;
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("/armaduras");
+        navigationManager.NavigateTo("Armaduras");
     }
 }
 

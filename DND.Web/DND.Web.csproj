@@ -25,13 +25,8 @@
 
   <ItemGroup>
     <Folder Include="Pages\Caracteristicas\" />
-    <Folder Include="Pages\Clases\" />
-    <Folder Include="Pages\Conjuros\" />
-    <Folder Include="Pages\Dotes\" />
     <Folder Include="Pages\Habilidades\" />
-    <Folder Include="Pages\ObjetosMagicos\" />
     <Folder Include="Pages\Personaje\" />
-    <Folder Include="Pages\Razas\" />
     <Folder Include="Pages\TablaClase\" />
     <Folder Include="Pages\Usuario\" />
   </ItemGroup>

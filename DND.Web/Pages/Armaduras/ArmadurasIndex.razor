@@ -6,10 +6,10 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-6 text-end">
-            <a href="/armaduras/create">
-                <span class="oi oi-plus" style="color:#EAEAEA"></span>
-            </a>
             <h1>
+                <a href="/Armaduras/create">
+                    <span class="oi oi-plus" style="color:#EAEAEA;font-size:0.5em"></span>
+                </a>
                 Armaduras
             </h1>
         </div>
@@ -78,10 +78,10 @@
                                         <p>@Convert.ToInt32(armadura.Precio) PO</p>
                                     </td>
                                     <td>
-                                        <a href="/armaduras/edit/@armadura.Id">
+                                        <a href="/Armaduras/edit/@armadura.Id">
                                             <i class="oi oi-pencil" style="color:#EAEAEA"></i>
                                         </a>
-                                        <a href="/armaduras/create">
+                                        <a href="/Armaduras" @onclick="@(() => DeleteAsync(armadura.Id))">
                                             <i class="oi oi-trash" style="color:#EAEAEA"></i>
                                         </a>
                                     </td>
@@ -102,9 +102,10 @@
     public List<Armadura>? armadurasOrigen { get; set; }
     bool asc = true;
     public string? searchText;
+
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<List<Armadura>>("api/armaduras");
+        var responseHttp = await repository.Get<List<Armadura>>("api/Armaduras");
         Armaduras = responseHttp.Response!;
         armadurasOrigen = Armaduras;
     }
@@ -113,10 +114,7 @@
         searchText = e.Value!.ToString();
         UpdateArmadurasList();
     }
-
     private void UpdateArmadurasList() => Armaduras = armadurasOrigen!.Where(armadura => armadura.Nombre.ToLower().Contains(searchText!.ToLower())).ToList();
-
-
     private async Task ShowDetail(Armadura armadura)
     {
         var alertConfig = new SweetAlertOptions
@@ -127,38 +125,35 @@
 
         await sweetAlertService.FireAsync(alertConfig);
     }
-    private async Task Delete(int armaduraId)
+    private async Task DeleteAsync(int id)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
-                Text = "¿Esta seguro que quieres borrar el registro?",
+                Text = "¿Realmente deseas eliminar el registro?",
                 Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si"
             });
 
         var confirm = string.IsNullOrEmpty(result.Value);
-
         if (confirm)
         {
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/armaduras/{armaduraId}");
-
-        if (responseHTTP.Error)
+        var responseHttp = await repository.Delete($"/api/Armaduras/{id}");
+        if (responseHttp.Error)
         {
-            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("/");
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
                 return;
             }
-
-            var mensajeError = await responseHTTP.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-            return;
         }
-
+        await OnInitializedAsync();
     }
     private void SortByName()
     {

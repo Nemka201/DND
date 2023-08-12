@@ -1,40 +1,40 @@
-﻿@page "/Armas/edit/{Id:int}"
+﻿@page "/Objetos-Magicos/edit/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <h3>Editar Arma</h3>
+            <h3>Editar Objeto Mágico</h3>
         </div>
     </div>
 </div>
 
-@if (arma is null)
+@if (om is null)
 {
     <p>Cargando...</p>
 }
 else
 {
-    <ArmaForm @ref="armaForm" Arma="arma" OnValidSubmit="Edit" ReturnAction="Return" />
+    <ObjetoMagicoForm @ref="omForm" ObjetoMagico="om" OnValidSubmit="Edit" ReturnAction="Return" />
 }
 
 @code {
-    private Arma? arma;
-    private ArmaForm? armaForm;
+    private ObjetoMagico? om;
+    private ObjetoMagicoForm? omForm;
 
     [Parameter]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHTTP = await repository.Get<Arma>($"api/Armas/{Id}");
+        var responseHTTP = await repository.Get<ObjetoMagico>($"api/ObjetoMagicos/{Id}");
 
         if (responseHTTP.Error)
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("Armas");
+                navigationManager.NavigateTo("ObjetosMagicos");
             }
             else
             {
@@ -44,13 +44,13 @@ else
         }
         else
         {
-            arma = responseHTTP.Response;
+            om = responseHTTP.Response;
         }
     }
 
     private async Task Edit()
     {
-        var responseHTTP = await repository.Put($"api/Armas/{arma.Id}", arma);
+        var responseHTTP = await repository.Put($"api/ObjetoMagicos/{om.Id}", om);
 
         if (responseHTTP.Error)
         {
@@ -59,14 +59,14 @@ else
         }
         else
         {
-            armaForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("Armas");
+            omForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("Objetos-Magicos");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("Armas");
+        navigationManager.NavigateTo("Objetos-Magicos");
     }
 }
 

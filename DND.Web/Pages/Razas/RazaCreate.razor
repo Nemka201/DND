@@ -1,0 +1,42 @@
+﻿@page "/Razas/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Agregar nueva Raza</h1>
+            <RazaForm  @ref="razaForm" Raza="raza" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Raza? raza { get; set; }
+    private RazaForm? razaForm;
+
+    private async Task CreateAsync()
+    {
+        var responseHttp = await repository.Post("/api/Razas", raza);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message);
+            return;
+        }
+        else
+        {
+            razaForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("/Razas");
+        }
+;
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/Razas");
+    }
+}
+
